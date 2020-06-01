@@ -1,7 +1,5 @@
-
 from libbgg.apibase import BGGBase
-from libbgg.errors import InvalidInputError, APICallError
-from datetime import date
+from libbgg.errors import InvalidInputError
 
 class BGG(BGGBase):
     """
