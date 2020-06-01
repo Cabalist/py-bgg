@@ -55,7 +55,7 @@ class InfoDict(dict):
         if strip_errors:
             root = InfoDict._get_root(xml)
         else:
-            root = ET.fromstring(xml, parser)
+            root = ET.fromstring(xml)
         d._build_dict_from_xml(d, root, strip_NS)
         return d
 
