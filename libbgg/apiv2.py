@@ -142,7 +142,7 @@ class BGG(BGGBase):
         for key, val in list(kwargs.items()):
             try:
                 kwargs[key] = int(val)
-            except:
+            except ValueError:
                 # If we can't convert it, leave it as a string
                 pass
         kwargs['username'] = username
