@@ -1,6 +1,7 @@
 from libbgg.apibase import BGGBase
 from libbgg.errors import InvalidInputError
 
+
 class BGG(BGGBase):
     """
     For version 2 of the api, you simply instantiate the object and call
@@ -32,8 +33,8 @@ class BGG(BGGBase):
 
     """
 
-    things = ('boardgame', 'boardgameexpansion', 'videogame', 'rpgitem', 
-        'rpgissue')
+    things = ('boardgame', 'boardgameexpansion', 'videogame', 'rpgitem',
+              'rpgissue')
     family_types = ('rpg', 'rpgperiodical', 'boardgamefamily')
     forum_list_types = ('thing', 'family')
     user_domains = ('boardgame', 'rpg', 'videogame')
@@ -42,10 +43,10 @@ class BGG(BGGBase):
     play_subtypes = ('boardgame', 'boardgameexpansion', 'videogame', 'rpgitem')
     search_types = play_subtypes
     hot_types = ('boardgame', 'rpg', 'videogame', 'boardgameperson',
-        'rpgperson', 'boardgamecompany', 'rpgcompany', 'videogamecompany')
+                 'rpgperson', 'boardgamecompany', 'rpgcompany', 'videogamecompany')
 
-    def __init__(self, url_base='http://www.boardgamegeek.com', 
-            path_base='xmlapi2'):
+    def __init__(self, url_base='http://www.boardgamegeek.com',
+                 path_base='xmlapi2'):
         super(BGG, self).__init__(url_base, path_base)
         self._last_called = None
 
@@ -59,7 +60,7 @@ class BGG(BGGBase):
             return self._things
         elif name in self.family_types:
             return self._family_items
-        raise AttributeError('%s is not a valid name' % name)
+        raise AttributeError(f'{name} is not a valid name')
 
     def _family_items(self, fid, ftype=None):
         """
@@ -71,13 +72,13 @@ class BGG(BGGBase):
         elif isinstance(ftype, (list, tuple)):
             ftype = ','.join(ftype)
         if isinstance(fid, (list, tuple)):
-            fid = ','.join([ str(i) for i in fid ])
+            fid = ','.join([str(i) for i in fid])
         d = {'id': fid, 'type': ftype}
         return self.call('family', d)
 
     def _things(self, bid, ttype=None, versions=False, videos=False,
-            stats=False, historical=False, marketplace=False, comments=False,
-            ratingcomments=False, page=1, pagesize=50):
+                stats=False, historical=False, marketplace=False, comments=False,
+                ratingcomments=False, page=1, pagesize=50):
         """
         This handles all the calls for "things" as defined by the
         BGG API: http://boardgamegeek.com/wiki/page/BGG_XML_API2
@@ -87,13 +88,13 @@ class BGG(BGGBase):
         elif isinstance(ttype, (list, tuple)):
             ttype = ','.join(ttype)
         if isinstance(bid, (list, tuple)):
-            bid = ','.join([ str(i) for i in bid ])
-        d = {'id': bid, 'type': ttype, 'versions': int(versions), 
-            'videos': int(videos), 'stats': int(stats), 
-            'historical': int(historical), 'marketplace': int(marketplace),
-            'comments': int(comments), 'ratingcomments': int(ratingcomments),
-            'page': page, 'pagesize': pagesize,
-        }
+            bid = ','.join([str(i) for i in bid])
+        d = {'id': bid, 'type': ttype, 'versions': int(versions),
+             'videos': int(videos), 'stats': int(stats),
+             'historical': int(historical), 'marketplace': int(marketplace),
+             'comments': int(comments), 'ratingcomments': int(ratingcomments),
+             'page': page, 'pagesize': pagesize,
+             }
         return self.call('thing', d)
 
     def search(self, search_str, qtype='boardgame', exact=False):
@@ -110,12 +111,11 @@ class BGG(BGGBase):
 
         invalid_types = set(qtype) - set(self.search_types)
         if invalid_types:
-            raise InvalidInputError('The qtypes must be one of {}, invalid '
-                'item(s) submitted: ({})'.format(self.search_types,
-                ', '.join(invalid_types)))
+            raise InvalidInputError(f'The qtypes must be one of {self.search_types}, '
+                                    f'invalid item(s) submitted: ({", ".join(invalid_types)})')
 
-        d = { 'query': search_str, 'type': ','.join(qtype),
-            'exact': int(exact) }
+        d = {'query': search_str, 'type': ','.join(qtype),
+             'exact': int(exact)}
         return self.call('search', d)
 
     def get_collection(self, username, wait=True, **kwargs):
@@ -161,7 +161,7 @@ class BGG(BGGBase):
         """
         if ftype not in self.forum_list_types:
             raise InvalidInputError('Forum type must be either "thing" or '
-                '"family"')
+                                    '"family"')
         d = {
             'id': int(fid),
             'type': ftype,
@@ -185,7 +185,7 @@ class BGG(BGGBase):
         return self.call('forum', d)
 
     def get_threads(self, tid, min_article_id=None, min_article_date=None,
-            count=None, username=None):
+                    count=None, username=None):
         """
         Gets forum thread(s) for the given thread id(s).
 
@@ -200,7 +200,7 @@ class BGG(BGGBase):
         username:str            *NOT CURRENTLY SUPPORTED*
         """
         if isinstance(tid, (list, tuple)):
-            tid = ','.join([ str(i) for i in tid ])
+            tid = ','.join([str(i) for i in tid])
 
         d = {
             'id': tid,
@@ -214,7 +214,7 @@ class BGG(BGGBase):
         return self.call('thread', d)
 
     def get_user(self, username, buddies=False, guilds=False, hot=False,
-            top=False, domain='boardgame', page=1):
+                 top=False, domain='boardgame', page=1):
         """
         Get information about a user.
 
@@ -228,19 +228,19 @@ class BGG(BGGBase):
         page:int            The page of items to return.  Page size is 100
         """
         if domain is not None and domain not in self.user_domains:
-            raise InvalidInputError('User domain must be one of {}'.format(
-                ', '.join(self.user_domains)))
+            raise InvalidInputError(f'User domain must be one of '
+                                    f'{", ".join(self.user_domains)}')
 
         d = {
-            'name': username, 
-            'buddies': int(buddies), 
+            'name': username,
+            'buddies': int(buddies),
             'guilds': int(guilds),
-            'hot': int(hot), 
-            'top': int(top), 
+            'hot': int(hot),
+            'top': int(top),
             'domain': domain,
             'page': int(page),
         }
-        
+
         return self.call('user', d)
 
     def get_guilds(self, gid, members=False, sort='username', page=1):
@@ -255,11 +255,11 @@ class BGG(BGGBase):
         page:int            The page number to retrieve.  Page size is 25
         """
         if isinstance(gid, (list, tuple)):
-            gid = ','.join([ str(i) for i in gid ])
+            gid = ','.join([str(i) for i in gid])
 
         if sort not in self.guild_sorts:
-            raise InvalidInputError('Guild sort types must be one of '
-                '{}'.format(', '.join(self.guild_sorts)))
+            raise InvalidInputError(f'Guild sort types must be one of '
+                                    f'{", ".join(self.guild_sorts)}')
 
         d = {
             'id': gid,
@@ -271,7 +271,7 @@ class BGG(BGGBase):
         return self.call('guild', d)
 
     def get_plays(self, username=None, gid=None, play_type='thing',
-            min_date=None, max_date=None, subtype='boardgame', page=1):
+                  min_date=None, max_date=None, subtype='boardgame', page=1):
         """
         Gets the plays for a particular username, or game id and play type.
         The default play type is "thing" and you must specify either a 
@@ -288,17 +288,17 @@ class BGG(BGGBase):
         page:int            The page to retrieve for this. Page size is 100
         """
         if play_type not in self.play_types:
-            raise InvalidInputError('play_type must be one of {}'.format(
-                ', '.join(self.play_types)))
+            raise InvalidInputError(f'play_type must be one of '
+                                    f'{", ".join(self.play_types)}')
 
         if subtype not in self.play_subtypes:
-            raise InvalidInputError('play_subtype must be one of {}'.format(
-                ', '.join(self.play_subtypes)))
+            raise InvalidInputError(f'play_subtype must be one of '
+                                    f'{", ".join(self.play_subtypes)}')
 
         if username is None and gid is None:
             raise InvalidInputError('You must specify either a username or '
-                'a game id (gid)')
-        
+                                    'a game id (gid)')
+
         d = {
             'username': username,
             'id': int(gid) if gid is not None else gid,
@@ -318,8 +318,8 @@ class BGG(BGGBase):
         hot_type:str    Gets a list of hot items for the given type
         """
         if hot_type not in self.hot_types:
-            raise InvalidInputError('hot_type must be one of {}'.format(
-                ', '.join(self.hot_types)))
+            raise InvalidInputError(f'hot_type must be one of '
+                                    f'{", ".join(self.hot_types)}')
 
         d = {'type': hot_type}
 

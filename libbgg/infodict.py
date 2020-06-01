@@ -1,5 +1,5 @@
-import xml.etree.ElementTree as ET
 import re
+import xml.etree.ElementTree as ET
 
 __all__ = ['InfoDict']
 
@@ -24,6 +24,7 @@ print d['myroot']
 # name will be a list:
 print d.myroot.item[1]
 """
+
 
 class InfoDict(dict):
     """
@@ -95,7 +96,7 @@ class InfoDict(dict):
             if el.text and el.text.strip():
                 new_dict['TEXT'] = el.text
             if isinstance(d[tag], list):
-                #d[tag].append(el.text)
+                # d[tag].append(el.text)
                 d[tag].append(new_dict)
             else:
                 # By defaul, the value will be a string
@@ -122,8 +123,8 @@ class InfoDict(dict):
             line_num, char_num = e.position
             line_idx = line_num - 1
             lines[line_idx] = lines[line_idx].replace(
-                lines[line_idx][char_num],
-                '',
+                    lines[line_idx][char_num],
+                    '',
             )
             return InfoDict._get_root('\n'.join(lines))
 

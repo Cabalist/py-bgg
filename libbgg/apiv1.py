@@ -1,10 +1,12 @@
-from libbgg.apibase import BGGBase
-from libbgg.errors import InvalidInputError
 from datetime import date
 
+from libbgg.apibase import BGGBase
+from libbgg.errors import InvalidInputError
+
+
 class BGG(BGGBase):
-    def __init__(self, url_base='http://www.boardgamegeek.com', 
-            path_base='xmlapi'):
+    def __init__(self, url_base='http://www.boardgamegeek.com',
+                 path_base='xmlapi'):
         super(BGG, self).__init__(url_base, path_base)
 
     def search(self, search_str, exact=False):
@@ -15,12 +17,12 @@ class BGG(BGGBase):
         search_str:str          The string to search for
         exact:bool              Match the string exactly
         """
-        d = { 'search': search_str, 'exact': int(exact) }
+        d = {'search': search_str, 'exact': int(exact)}
         return self.call('search', d)
 
     def get_game(self, game_ids=None, comments=False, comments_page=1,
-            stats=False, historical=False, historical_start=None, 
-            historical_end=None):
+                 stats=False, historical=False, historical_start=None,
+                 historical_end=None):
         """
         Gets info on a particular game or games.  game_ids can be either
         an integer id, a string id ("12345"), or an iterable of ids.
@@ -35,10 +37,10 @@ class BGG(BGGBase):
         historical_end:datetime.date        The end date for historical stats
         """
         if isinstance(game_ids, (str, int)):
-            game_ids = [ int(game_ids) ]
+            game_ids = [int(game_ids)]
         else:
-            game_ids = [ int(gid) for gid in game_ids ]
-        d = { 'stats': int(stats) }
+            game_ids = [int(gid) for gid in game_ids]
+        d = {'stats': int(stats)}
         if comments:
             # Set the comments options
             d['comments'] = 1
@@ -49,15 +51,14 @@ class BGG(BGGBase):
             if isinstance(historical_start, date):
                 d['from'] = str(historical_start)
             elif historical_start is not None:
-                raise InvalidInputError('"historical_start" must be of type '
-                    'datetime.date, not %s' % type(historical_start))
+                raise InvalidInputError(f'"historical_start" must be of type'
+                                        f' datetime.date, not {type(historical_start)}')
             if isinstance(historical_end, date):
                 d['to'] = str(historical_end)
             elif historical_end is not None:
-                raise InvalidInputError('"historical_end" must be of type '
-                    'datetime.date, not %s' % type(historical_end))
-        return self.call('boardgame/%s' % ','.join(
-            [ str(gid) for gid in game_ids ]), d)
+                raise InvalidInputError(f'"historical_end" must be of type'
+                                        f' datetime.date, not {type(historical_end)}')
+        return self.call(f'boardgame/{",".join([str(gid) for gid in game_ids])}', d)
 
     def get_collection(self, username, wait=True, **kwargs):
         """
@@ -82,10 +83,10 @@ class BGG(BGGBase):
         # so set them as such
         for key, val in list(kwargs.items()):
             kwargs[key] = int(val)
-        return self.call('collection/%s' % username, kwargs, wait)
+        return self.call(f'collection/{username}', kwargs, wait)
 
-    def get_thread_messages(self, thr_id, start=0, count=100, 
-            username=None):
+    def get_thread_messages(self, thr_id, start=0, count=100,
+                            username=None):
         """
         Gets messages from a forum/game thread.
 
@@ -96,13 +97,13 @@ class BGG(BGGBase):
         username:str        The username to filter for
         """
         thr_id = int(thr_id)
-        d = { 'start': int(start), 'count': int(count) }
+        d = {'start': int(start), 'count': int(count)}
         if d['count'] > 100:
-            raise InvalidInputError('The maximum value for "count" is 100, and '
-                'you requested %s' % count)
+            raise InvalidInputError(f'The maximum value for "count" is 100, '
+                                    f'and you requested {count}')
         if username is not None:
             d['username'] = username
-        return self.call('thread/%s' % thr_id, d)
+        return self.call(f'thread/{thr_id}', d)
 
     def get_geeklist(self, list_id, comments=False):
         """
@@ -112,5 +113,5 @@ class BGG(BGGBase):
         comments:bool       If set to True, will also retrieve the comments
         """
         list_id = int(list_id)
-        d = { 'comments': int(comments) }
-        return self.call('geeklist/%s' % list_id, d)
+        d = {'comments': int(comments)}
+        return self.call(f'geeklist/{list_id}', d)
